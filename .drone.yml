@@ -1,0 +1,78 @@
+---
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+  - name: docker-build
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli
+    environment:
+      PROJECT_ID: base-operation-service
+      GCP_ZONE: asia-southeast1-a
+      CLUSTER_NAME: coinhe-services
+      PRODUCT_NAME: bybet
+      APP_NAME: user-identity
+      GCLOUD_SERVICE_ACCOUNT_KEY:
+        from_secret: service_account
+    commands:
+      - export APP_VERSION=${DRONE_COMMIT_SHA:0:8}
+      - ./k8s/cloud-auth.sh
+      - ./k8s/cloud-build.sh
+    when:
+      branch:
+        - main
+      event:
+        - push
+
+  - name: deploy-dev
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli
+    environment:
+      PROJECT_ID: base-operation-service
+      GCP_ZONE: asia-southeast1-a
+      CLUSTER_NAME: coinhe-services
+      NAMESPACE: bybet
+      PRODUCT_NAME: bybet
+      APP_NAME: user-identity
+      HELM_NAME: user-identity
+      ENVIRONMENT: dev
+      GCLOUD_SERVICE_ACCOUNT_KEY:
+        from_secret: service_account
+    commands:
+      - export APP_VERSION=${DRONE_COMMIT_SHA:0:8}
+      - export CURRENT_TIMESTAMP=ts-$$(date +%s)
+      - export IMAGE_REPOSITORY=asia.gcr.io/$${PROJECT_ID}/$${PRODUCT_NAME}/$${APP_NAME}
+      - export IMAGE_TAG=$${APP_VERSION}
+      - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - ./k8s/cloud-auth.sh
+      - ./k8s/helm-deploy.sh
+    when:
+      branch:
+        - main
+      event:
+        - push
+  
+  # - name: deploy-function
+  #   image: gcr.io/google.com/cloudsdktool/google-cloud-cli
+  #   environment:
+  #     PROJECT_ID: rare-guide-352002
+  #     GCP_ZONE: asia-southeast1-a
+  #     GCLOUD_SERVICE_ACCOUNT_KEY:
+  #       from_secret: service_account
+  #   commands:
+  #     - ./k8s/cloud-auth.sh
+  #     - gcloud beta builds submit . --config ./scripts/cloud-build.yml
+  #   when:
+  #     branch:
+  #       - main
+  #     event:
+  #       - push
+
+  - name: discord
+    image: appleboy/drone-discord
+    settings:
+      webhook_id: "969048145600335943"
+      webhook_token: "ZYFIKytYC-9MHeG6QsPFQ_aTimEzCXucDbHqhoABsT9OrfXzrT9XvUmGywtDuHC6vxbX"
+    when:
+      status:
+        - failure
+        - success

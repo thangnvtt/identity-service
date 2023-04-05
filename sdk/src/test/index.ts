@@ -1,0 +1,26 @@
+import { UserIdentityClient } from '../client'
+
+const testSignin = async () => {
+	const client = new UserIdentityClient({
+		baseUrl: 'https://api-bybet.noownerapi.com/identity',
+		tokenId:
+			'eyJhbGciOiJSUzI1NiIsImtpZCI6ImY4MDljZmYxMTZlNWJhNzQwNzQ1YmZlZGE1OGUxNmU4MmYzZmQ4MDUiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiSmFzb24gTHUiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUxtNXd1M0tfZkJRQW1BT09uSnJJSjgtazNIeXMyeUVnVU1MMVRacHlGa2E9czk2LWMiLCJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmFyZS1ndWlkZS0zNTIwMDIiLCJhdWQiOiJyYXJlLWd1aWRlLTM1MjAwMiIsImF1dGhfdGltZSI6MTY2ODY3MzQ4OCwidXNlcl9pZCI6IktzNVZRS1g4aFJOWnlVWTBYTWEwejQ5ZUl4RDIiLCJzdWIiOiJLczVWUUtYOGhSTlp5VVkwWE1hMHo0OWVJeEQyIiwiaWF0IjoxNjY4Njc2NTM1LCJleHAiOjE2Njg2ODAxMzUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMTAyNjg4MTMwNzk2NzE1OTc1NjUiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJnb29nbGUuY29tIn19.BqlL11fQIPYeycTb8nQs_yBvt6r4VarpUsnkxbxTtJG4GaW_b0CxGAByXUAYgTWSWogBUNOFedCfORq7bDkF6POeanVDfY1JaK4O_KQIPvf2uT3s9h86WXYH6064iAyEqwfYiGCf6xgRqFUGZMleDEux_EnlctwKyFn9qyV3Zze6xj3FT81L0JrejDJJSQp1Qn65D3umgvh8dY40sPt4D6jIMegRUb2gnW38LetlbexGnP2yrLFlL4IMJUQ4hE-gfxk_n3P97KwuCDfjF0BQcAN_B_oqq7HdcS7S4kpTBQCRpFFGYIYholWhesPWD_B28OT1kgZcZU47Wdq3eFbCkw',
+		refreshToken:
+			'AOkPPWRVuYJzngyaGSqqcRs7bTcBXYjPgnM0ndcToMsDlEnXex1v7Tdgr86G71CSEu_fSemgHG7n9bV_H76z9nHtzGCueIhvznDDE-ECc5EtXo6Rl_UvQfU2qHY7zF1avqEc0qif91MLkDOLZZQnGdTiusT7XRhXLjYz4efjZ--riCQZDH3EizcKWcFfGiZRravc5pSYyPFK50zXGFinNZwXETq2lWeVDaSKAH8oprJZKGvB-1m9KqlArf1dKk01QNT4VdMUlGTY852oloEyDPzYigR1vhbKaP2kejH-NSwuvVnui7wxg_1I3hnWEYGtjpRTa-7AFvOB5QDp8gA5c6WcjKpK4_EDLH-whtTvIossc9c6_johB7WcwIq9HTcfrRT9JaL97uMFV5TJVMlK6t_APUOjKvN6nHZijfIO0J9GbAV4Rp_aC3I',
+		firebaseApiKey: 'AIzaSyA9wmE3OWJGTlrCtxwyUPhScYimGJPHBgk',
+	})
+
+	// const QrCodeAndSecret = await client.createQrCodeAndSecretKey()
+
+	// console.log(QrCodeAndSecret)
+	console.log(await client.turnOn2fa({ password: 'Trung1202?', twoFactorCode: '694011' }))
+
+	client.onTokenChange((token, refreshToken) => {
+		console.log('token changed', token)
+		console.log('refreshToken changed', refreshToken)
+	})
+	// await client.refreshToken()
+	console.log(await client.getUser('Ks5VQKX8hRNZyUY0XMa0z49eIxD2'))
+}
+
+testSignin()

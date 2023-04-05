@@ -1,0 +1,79 @@
+# Default values for main.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+# This is the helm convention on declaring images
+image:
+  repository: asia.gcr.io/base-operation-service/bybet/user-identity
+  tag: latest
+  pullPolicy: IfNotPresent
+
+app:
+  deploymentTimestamp: "ts-1650359272292"
+  serviceAccount: "wi-bybet"
+  config:
+    PORT: "3000"
+    REDIS_URL: "redis://redis-master.redis:6379"
+    REDIS_COMMON_TTL: "10"
+    REDIS_WALLET_SIGN_TTL: "3600"
+    FIREBASE_PROJECT_ID: "rare-guide-352002"
+    TARGET_SERVICE_ACCOUNT: "bybet-app@rare-guide-352002.iam.gserviceaccount.com"
+    PREFIX_WALLET_LOGIN_CODE: "BYBET_LOGIN_CODE:"
+    PUBSUB_TOPIC: "bybet-user-identity-user"
+    CLOUD_PROJECT_ID: "base-operation-service"
+    PUBSUB_SUBSCRIPTION_ID: "bybet-user-identity-user-sub"
+    STORAGE_PROJECT_ID : "base-operation-service"
+    BUCKET_ID : "cdn.noownerapi.com"
+    REDIS_KEY_NUMBER_FILE : "bybet:uploaded_file"
+    MAX_NUMBER_UPLOADED_FILE : "5"
+    MAX_SIZE_FILE_AVT : "5242880"
+    EXCHANGE_ID_TOKEN_URL: "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyA9wmE3OWJGTlrCtxwyUPhScYimGJPHBgk"
+    DEFAULT_AVATAR: "https://cdn.bybet.io/avatar/1.png"
+
+    #Firebase config
+    FIREBASE_API_KEY: "AIzaSyA9wmE3OWJGTlrCtxwyUPhScYimGJPHBgk"
+    FIREBASE_AUTH_DOMAIN: "rare-guide-352002.firebaseapp.com"
+    FIREBASE_PROJECT_ID: "rare-guide-352002"
+    FIREBASE_STORAGE_BUCKET: "rare-guide-352002.appspot.com"
+    FIREBASE_MESSAGING_SENDER_ID: "416899977795"
+    FIREBASE_APP_ID: "1:416899977795:web:a094257b4f6aafc89b3af6"
+    FIREBASE_MEASUREMENT_ID: "G-MMRVV5FL6G"
+
+service:
+  name: app
+  type: NodePort
+  externalPort: 80
+  internalPort: 3000
+
+secret:
+  enabled: false
+
+ingress:
+  enabled: false
+
+ambassador:
+  enabled: true
+  hostname: api-bybet.noownerapi.com
+  email: jason@coinhe.io
+  authority: https://acme-v02.api.letsencrypt.org/directory
+  prefix: /identity/
+  rewrite: /
+  mergeSlashes: true
+
+istio:
+  enabled: false
+
+migration:
+  enabled: false
+
+podAutoscaler:
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+spot:
+  enable: false
+  podAutoscaler:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80

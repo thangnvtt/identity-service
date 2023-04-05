@@ -1,0 +1,104 @@
+# Default values for main.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+# This is the helm convention on declaring images
+image:
+    repository: asia.gcr.io/base-operation-service/bybet/user-identity
+    tag: latest
+    pullPolicy: IfNotPresent
+
+app:
+    deploymentTimestamp: 'ts-1650359272292'
+    serviceAccount: 'wi-bybet'
+    config:
+        PORT: '3000'
+        REDIS_URL: 'redis://redis-master.redis:6379'
+        REDIS_COMMON_TTL: '10'
+        REDIS_WALLET_SIGN_TTL: '3600'
+        FIREBASE_PROJECT_ID: 'rare-guide-352002'
+        TARGET_SERVICE_ACCOUNT: 'bybet-app@rare-guide-352002.iam.gserviceaccount.com'
+        PREFIX_WALLET_LOGIN_CODE: 'BYBET_LOGIN_CODE:'
+        PUBSUB_TOPIC: 'bybet-user-identity-user'
+        CLOUD_PROJECT_ID: 'base-operation-service'
+        PUBSUB_SUBSCRIPTION_ID: 'bybet-user-identity-user-sub'
+        SECRET_KEY_JWT_2FA: '2fa-bybet-auth-key'
+        LINK_GET_JWT_TOKEN: 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'
+        AUTH_2FA_NAME: 'BYBET_USER'
+        STORAGE_PROJECT_ID: 'base-operation-service'
+        BUCKET_ID: 'cdn.noownerapi.com'
+        REDIS_KEY_NUMBER_FILE: 'bybet:uploaded_file'
+        MAX_NUMBER_UPLOADED_FILE: '5'
+        MAX_SIZE_FILE_AVT: '5242880'
+        EXCHANGE_ID_TOKEN_URL: 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyA9wmE3OWJGTlrCtxwyUPhScYimGJPHBgk'
+        DEFAULT_AVATAR: 'https://cdn.bybet.io/avatar/10.png'
+
+        #Firebase config
+        FIREBASE_API_KEY: 'AIzaSyA9wmE3OWJGTlrCtxwyUPhScYimGJPHBgk'
+        FIREBASE_AUTH_DOMAIN: 'rare-guide-352002.firebaseapp.com'
+        FIREBASE_STORAGE_BUCKET: 'rare-guide-352002.appspot.com'
+        FIREBASE_MESSAGING_SENDER_ID: '416899977795'
+        FIREBASE_APP_ID: '1:416899977795:web:a094257b4f6aafc89b3af6'
+        FIREBASE_MEASUREMENT_ID: 'G-MMRVV5FL6G'
+
+        #Email
+        MUIL_BASE_URL: 'https://muil.noownerapi.com/api/templates'
+        EMAIL_SENT_NO_REPLY: 'noreply@bybet.io'
+        MUIL_API_KEY: 'af64e386.6b74434eb7c4a23757558c60.muil'
+        MUIL_BRANCH: 'development'
+        RESET_PASSWORD_TEMPLATE_ID: 'bybet_forgotpassword'
+        VERIFICATION_TEMPLATE_ID: 'skychain_verification'
+        EMAIL_SUPPORT_SYSTEM: 'support@skychain.live'
+
+        #TOTP
+        NUMBER_DIGITS: '6'
+        TLS_VERIFICATION_CODE: '86400'
+        AUTH_SALT: 'XCkSBgMTMQHLV7dxneHd'
+        CODE_EMAIL_VERIFICATION_EXPIRED_IN: '900000'
+
+        #Reset password
+        RESET_PASSWORD_PRIVATE_KEY: 'zsQ1CBceHhCht'
+        EXPIRED_IN_RESET_PASSWORD: '2h'
+        RESET_PASSWORD_URL: 'https://develop.bybet-website.pages.dev/reset-password'
+        REDIS_RESET_PASSWORD_TTL: '7200000'
+
+        #Two factor authentication
+        TWO_FACTOR_TOKEN_EXPIRED_IN: '30000'
+service:
+    name: app
+    type: NodePort
+    externalPort: 80
+    internalPort: 3000
+
+secret:
+    enabled: false
+
+ingress:
+    enabled: false
+
+ambassador:
+    enabled: true
+    hostname: api-bybet.noownerapi.com
+    email: jason@coinhe.io
+    authority: https://acme-v02.api.letsencrypt.org/directory
+    prefix: /identity/
+    rewrite: /
+    mergeSlashes: true
+
+istio:
+    enabled: false
+
+migration:
+    enabled: false
+
+podAutoscaler:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+spot:
+    enable: false
+    podAutoscaler:
+        minReplicas: 1
+        maxReplicas: 5
+        targetCPUUtilizationPercentage: 80

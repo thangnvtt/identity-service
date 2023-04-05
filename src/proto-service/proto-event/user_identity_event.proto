@@ -1,0 +1,31 @@
+syntax = "proto3";
+package model;
+
+message UserIdentityUserEvent {
+  enum Status {
+    ACTIVED = 0;
+    DEACTIVED = 10;
+    BANNED = 20;
+  }
+
+  enum State {
+    INIT = 0;
+    CREATED = 10;
+    UPDATED = 20;
+  }
+
+  string id = 1;   
+  string email = 2;
+  string nick_name = 3;
+  string address = 4;
+  string status = 5;
+  string first_name = 6;
+  string last_name = 7;
+  string wallet_address = 8;
+  int64 birthday = 9;
+  bool is_admin = 10;
+  int64 signed_in_at = 11;
+  int64 signed_up_at = 12;
+  string state = 13;
+  string provider = 14;
+}

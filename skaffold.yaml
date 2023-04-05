@@ -1,0 +1,23 @@
+apiVersion: skaffold/v2beta28
+kind: Config
+build:
+  local:
+    push: true
+    useDockerCLI: false
+    useBuildkit: false
+  artifacts:
+  - image: asia.gcr.io/base-operation-service/bybet/user-identity
+    docker:
+      dockerfile: "k8s/Dockerfile"
+
+deploy:
+  helm:
+    releases:
+      - name: user-identity-dev
+        chartPath: k8s/helm
+        artifactOverrides:
+          image: asia.gcr.io/base-operation-service/bybet/user-identity
+        valuesFiles:
+          - ./k8s/helm/values.local.yaml
+        imageStrategy:
+          helm: {}

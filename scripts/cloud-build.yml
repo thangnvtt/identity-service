@@ -1,0 +1,38 @@
+steps:
+    - name: 'node:16'
+      entrypoint: 'yarn'
+      args: ['install']
+      id: 'build-app'
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      wait_for: ['build-app']
+      args:
+          - gcloud
+          - functions
+          - deploy
+          - event-user-create-firebase
+          - --entry-point=userCreateEvent
+          - --trigger-event=providers/firebase.auth/eventTypes/user.create
+          - --trigger-resource=rare-guide-352002
+          - --runtime=nodejs16
+          - --env-vars-file=.env.yaml
+          - --region=asia-southeast1
+          - --memory=128MB
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      wait_for: ['build-app']
+      args:
+          - gcloud
+          - functions
+          - deploy
+          - event-meta-wallet-user-identity-trigger
+          - --entry-point=metaWalletEvent
+          - --trigger-topic=meta-wallet
+          - --runtime=nodejs16
+          - --env-vars-file=.env.yaml
+          - --region=asia-southeast1
+          - --memory=128MB
+          - --vpc-connector=projects/base-operation-service/locations/asia-southeast1/connectors/cht-dev-vpc-connector
+
+options:
+    logging: CLOUD_LOGGING_ONLY

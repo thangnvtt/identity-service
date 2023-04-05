@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package model;
+
+message MainEvent {
+  enum Type {
+      USER_IDENTITY_USER = 0;
+      META_WALLET = 1;
+  }
+  string id = 1;
+  string eventType = 2;
+  bytes object = 3;
+  string objectId = 4;
+  string object_state = 5;
+  map<string, string> headers = 6;
+  string requestId = 7;
+  string source = 8;
+  uint64 timestamp = 9;
+}

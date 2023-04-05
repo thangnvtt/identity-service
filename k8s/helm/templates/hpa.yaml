@@ -1,0 +1,17 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+ name: {{ template "main.fullname" . }}
+ labels:
+   app: {{ template "main.name" . }}
+   chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+   release: {{ .Release.Name }}
+   heritage: {{ .Release.Service }}
+spec:
+    {{- if .Values.podAutoscaler }}
+{{ toYaml .Values.podAutoscaler | indent 2 }}
+    {{- end }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "main.fullname" . }}

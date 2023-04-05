@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "main.fullname" . }}
+  labels:
+    app: {{ template "main.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "main.name" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "main.name" . }}
+        release: {{ .Release.Name }}
+{{- if .Values.app.deploymentTimestamp }}
+        timestamp: {{ .Values.app.deploymentTimestamp }}
+{{- end }}
+    spec:
+{{- if .Values.app.serviceAccount }}
+      serviceAccountName: {{ .Values.app.serviceAccount }}
+{{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          livenessProbe:
+            httpGet:
+              path: /healths
+              port: {{ .Values.service.internalPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healths
+              port: {{ .Values.service.internalPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          ports:
+            - containerPort: {{ .Values.service.internalPort }}
+          envFrom:
+            - secretRef:
+                name: {{ template "main.fullname" . }}
+            - configMapRef:
+                name: {{ template "main.fullname" . }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}

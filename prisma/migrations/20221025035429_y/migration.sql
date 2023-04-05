@@ -1,0 +1,12 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `twoFactorAuthenticationSecret` on the `User` table. All the data in the column will be lost.
+  - You are about to drop the column `twoFactorIsEnable` on the `User` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "User" DROP COLUMN "twoFactorAuthenticationSecret",
+DROP COLUMN "twoFactorIsEnable",
+ADD COLUMN     "two_actor_is_enable" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "two_factor_authentication_secret" TEXT;

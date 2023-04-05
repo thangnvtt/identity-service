@@ -1,0 +1,56 @@
+{{- if .Values.migration.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "main.fullname" . }}-migration
+  labels:
+    app: {{ template "main.fullname" . }}-migration
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{- if .Values.migration.config }}
+{{ toYaml .Values.migration.config | indent 2 }}
+{{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "main.fullname" . }}-migration
+  labels:
+    app: {{ template "main.name" . }}-migration
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: {{ template "main.name" . }}-migration
+        release: {{ .Release.Name }}
+    spec:
+      restartPolicy: "Never"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: 
+            - yarn
+            - typeorm:run
+          envFrom:
+            - secretRef:
+                name: {{ template "main.fullname" . }}
+            - configMapRef:
+                name: {{ template "main.fullname" . }}-migration
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,39 @@
+{{- if .Values.ambassador.enabled }}
+apiVersion: getambassador.io/v2
+kind: Host
+metadata:
+  name: {{ .Values.ambassador.hostname }}
+spec:
+  acmeProvider:
+    authority: {{ .Values.ambassador.authority }}
+    email: {{ .Values.ambassador.email }}
+  ambassador_id:
+  - default
+  hostname: {{ .Values.ambassador.hostname }}
+  selector:
+    matchLabels:
+      hostname: {{ .Values.ambassador.hostname }}
+  tlsSecret:
+    name: {{ .Values.ambassador.hostname }}
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: {{ .Values.ambassador.hostname }}
+spec:
+  connect_timeout_ms: 20000
+  host: ^({{ .Values.ambassador.hostname }})$
+  host_regex: true
+  prefix:  {{ .Values.ambassador.prefix }}
+  rewrite: {{ .Values.ambassador.rewrite }}
+  merge_slashes: {{ .Values.ambassador.mergeSlashes }}
+  service: {{ template "main.fullname" . }}:{{ .Values.service.externalPort }}
+  timeout_ms: 20000
+  cors:
+    origins: "*"
+    methods: "*"
+    headers: "*"
+    credentials: true
+    max_age: "86400"
+
+{{- end }}

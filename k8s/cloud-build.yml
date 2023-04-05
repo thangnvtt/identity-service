@@ -1,0 +1,25 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args: ['-c', 'docker pull asia.gcr.io/${_PROJECT_ID}/${_PRODUCT_NAME}/${_APP_NAME}:base || exit 0']
+  id: 'pull-image'
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', 
+        '-f', 'k8s/Dockerfile', 
+        '--cache-from', 'asia.gcr.io/${_PROJECT_ID}/${_PRODUCT_NAME}/${_APP_NAME}:base',
+        '-t', 'asia.gcr.io/${_PROJECT_ID}/${_PRODUCT_NAME}/${_APP_NAME}:${_APP_VERSION}', '.']
+  id: 'build-image'
+  wait_for: ['pull-image']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['tag', 
+        'asia.gcr.io/${_PROJECT_ID}/${_PRODUCT_NAME}/${_APP_NAME}:${_APP_VERSION}',
+        'asia.gcr.io/${_PROJECT_ID}/${_PRODUCT_NAME}/${_APP_NAME}:base']
+  id: 'tag-image'
+  wait_for: ['build-image']
+
+images: 
+- 'asia.gcr.io/${_PROJECT_ID}/${_PRODUCT_NAME}/${_APP_NAME}:${_APP_VERSION}'
+- 'asia.gcr.io/${_PROJECT_ID}/${_PRODUCT_NAME}/${_APP_NAME}:base'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
